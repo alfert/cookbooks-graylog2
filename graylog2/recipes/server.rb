@@ -18,7 +18,7 @@
 #
 
 # Install MongoDB from 10gen repository
-include_recipe "mongodb::10gen_repo"
+# include_recipe "mongodb::10gen_repo"
 include_recipe "mongodb::default"
 
 # Install required APT packages
