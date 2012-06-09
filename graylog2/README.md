@@ -1,10 +1,10 @@
 Description
 ===========
 
-Installs and configures a Graylog2 server on Ubuntu systems (10.04 only at present).
+Installs and configures a Graylog2 server on Ubuntu systems (12.04 only at present). 
 
 This is a Chef re-engineering of the Sean Porter (@portertech) Linode StackScript for graylog2, 
-available here:  http://is.gd/cWA0w9
+available here:  http://is.gd/cWA0w9. This version is forked from J.B. Zimmermann version for Ubuntu 10.04. 
 
 Recipes
 =======
@@ -13,14 +13,15 @@ default
 -------
 
 Downloads, installs, configures and starts the java graylog2-server.  Does *not* install 
-the web-interface. Uses resources from the Opscode "apt" cookbook to add a repo from which
-it pulls MongoDB.
+the web-interface. Uses the java, mongodb, and elasticsearch cookbooks to install the respective
+systems
+
 
 web-interface
 -------------
 
 First calls graylog2::default to install the server.  Then downloads, installs, and configures 
-the rails-based graylog2-web-interface.  Also installs a local mysql-server to support it.  
+the rails-based graylog2-web-interface.  Also installs a local mongo-server to support it.  
 
 apache2
 -------
@@ -40,7 +41,7 @@ you use another webserver, you can call graylog2:web-interface, which will insta
 and the web-interface rails app, but not configure a webserver to serve it.
 
 Note that this cookbook makes lots of assumptions about defaults, and does things like install a local
-mysql server with no root password (doh).  Do be sure to tweak this for your comfort and security
+mongo server with no root password (doh).  Do be sure to tweak this for your comfort and security
 before using it in production.
 
 Also note - this cookbook does *not* switch off any local logging system.  That means that if you are
@@ -57,6 +58,7 @@ License and Author
 ==================
 
 Author:: J.B. Zimmerman (<jzimmerman@mdsol.com>)
+         Klaus Alfert (klaus.alfert@googlemail.com)
 
 Copyright 2011 Medidata Solutions, Inc.
 
