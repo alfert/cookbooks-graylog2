@@ -14,4 +14,5 @@ depends "apache2" # http://community.opscode.com/cookbooks/apache2
 depends "mongodb" # http://community.opscode.com/cookbooks/mongodb
 depends "java"
 depends "elasticsearch" # https://github.com/karmi/cookbook-elasticsearch
+depends "rvm" # http://community.opscode.com/cookbooks/rvm
 
