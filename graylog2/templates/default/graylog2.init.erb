@@ -17,6 +17,7 @@
 BINDIR=<%= node[:graylog2][:basedir] %>/server/bin
 NAME=graylog2
 DESC=graylog2
+NOHUP=`which nohup`
 
 test -x /usr/bin/java || exit 0
 
@@ -26,7 +27,7 @@ case "$1" in
   start)
         echo -n "Starting $DESC: "
         cd $BINDIR
-        ./graylog2ctl start
+        $NOHUP ./graylog2ctl start > /var/log/graylog2.log 2>&1 &
         echo "...started."
         ;;
   stop)
