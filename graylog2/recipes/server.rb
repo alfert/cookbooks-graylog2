@@ -23,8 +23,8 @@ if node['platform'] == "Ubuntu" and node['platform_version'].to_f < "12.04"
 end
 include_recipe "mongodb::default"
 
-# Install required APT packages
-package "openjdk-6-jre"
+# Install Java properly (with JAVA_HOME)
+include_recipe "java::openjdk"
 
 # Create the release directory
 directory "#{node.graylog2.basedir}/rel" do
