@@ -43,8 +43,9 @@ end
 # Unpack the desired version of Graylog2 web interface
 execute "tar zxf graylog2-web-interface-#{node.graylog2.web_interface.version}.tar.gz" do
   cwd "#{node.graylog2.basedir}/rel"
+   # creates checks whether the file exists, if yes, then the command is not run!
   creates "#{node.graylog2.basedir}/rel/graylog2-web-interface-#{node.graylog2.web_interface.version}/build_date"
-  action :nothing
+  action :run
   subscribes :run, resources(:remote_file => "download_web_interface"), :immediately
 end
 
