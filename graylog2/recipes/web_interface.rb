@@ -23,6 +23,10 @@ if node.graylog2.email_package
     package node.graylog2.email_package
 end
 
+# We use rvm to ensure a proper 1.9.3 environemnt
+# include_recipe 'rvm::ruby_193'
+
+
 # Install gem dependencies
 gem_package "bundler"
 gem_package "rake"
@@ -57,7 +61,7 @@ end
 # Perform bundle install on the newly-installed Graylog2 web interface version
 execute "bundle install" do
   cwd "#{node.graylog2.basedir}/web"
-  action :nothing
+  action :run
   subscribes :run, resources(:link => "#{node.graylog2.basedir}/web"), :immediately
 end
 
