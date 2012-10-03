@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: graylog2
-# Recipe:: web_interface
+# Recipe:: web2
 #
-# Copyright 2010, Medidata Solutions Inc.
+# Copyright 2012, Klaus Alfert
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,20 +23,44 @@ if node.graylog2.email_package
     package node.graylog2.email_package
 end
 
+group node['graylog2']['web_group'] do
+  action :create
+  system true
+end
+
+user node['graylog2']['web_user'] do
+  action :create
+  home node['graylog2']['basedir']
+  gid node['graylog2']['web_group']
+  comment "services user for the graylog2-web-interface"
+  supports :manage_home => true
+  shell "/bin/bash"
+  system true
+end
+
 # We use chef-rvm to ensure a proper 1.9.3 environemnt
 
 # Install gem dependencies together with chef-rvm (= replacing gem_package with rvm_gem)
 #gem_package "bundler"
 #gem_package "rake"
-rvm_gem 'rake' do
-  action :install
+rvm_ruby node['graylog2']['ruby_version'] do
+  # user node['graylog2']['web_user']
 end
 
-rvm_gem 'bundler' do
-  action :install
+rvm_gemset node['graylog2']['ruby_string'] do
+  action :create
 end
 
+rvm_gem "bundler" do
+  ruby_string node['graylog2']['ruby_string']
+  # user node['graylog2']['web_user']
+end
 
+rvm_gem "passenger" do
+  ruby_string node['graylog2']['ruby_string']
+    # user node['graylog2']['web_user']
+  version node['graylog2']['passenger_version']
+end
 
 # Create the release directory
 directory "#{node.graylog2.basedir}/rel" do
@@ -61,17 +85,35 @@ execute "tar zxf graylog2-web-interface-#{node.graylog2.web_interface.version}.t
 end
 
 # Link to the desired Graylog2 web interface version
-link "#{node.graylog2.basedir}/web" do
+link node['graylog2']['web_path'] do
   to "#{node.graylog2.basedir}/rel/graylog2-web-interface-#{node.graylog2.web_interface.version}"
 end
 
 # Perform bundle install on the newly-installed Graylog2 web interface version
 #execute "rvm exec bundle install" do
 rvm_shell 'bundle install' do
-  cwd "#{node.graylog2.basedir}/web"
+  ruby_string node['graylog2']['ruby_string']
+  cwd node['graylog2']['web_path'] 
+  # user node['graylog2']['web_user']
   action :run
-  subscribes :run, resources(:link => "#{node.graylog2.basedir}/web"), :immediately
+  subscribes :run, resources(:link => node['graylog2']['web_path']), :immediately
 end
+
+# rvm_shell "passenger module install" do
+#   user node['graylog2']['web_user']
+#   group node['graylog2']['web_group']
+#   creates "#{node['graylog2']['web_path']}/.rvm/gems/#{node['graylog2']['ruby_version']}/gems/passenger-#{node['graylog2']['passenger_version']}/ext/apache2/mod_passenger.so"
+#   cwd node['graylog2']['web_path']
+#   code %{passenger-install-apache2-module --auto}
+# end
+
+# rvm_shell "run bundler install" do
+#   user node['graylog2']['web_user']
+#   group node['graylog2']['web_group']
+#   cwd node['graylog2']['web_path']
+#   code %{bundle install}
+# end
+
 
 # Create mongoid.yml
 template "#{node.graylog2.basedir}/web/config/mongoid.yml" do
@@ -86,31 +128,27 @@ external_hostname = node.graylog2.external_hostname     ? node.graylog2.external
 
 # Create general.yml
 template "#{node.graylog2.basedir}/web/config/general.yml" do
-  owner "nobody"
-  group "nogroup"
+  owner node['graylog2']['web_user']
+  group node['graylog2']['web_group']
   mode 0644
   variables( :external_hostname => external_hostname )
 end
 
-# Chown the Graylog2 directory to nobody/nogroup to allow web servers to serve it
-execute "sudo chown -R nobody:nogroup graylog2-web-interface-#{node.graylog2.web_interface.version}" do
-  cwd "#{node.graylog2.basedir}/rel"
-  not_if do
-    File.stat("#{node.graylog2.basedir}/rel/graylog2-web-interface-#{node.graylog2.web_interface.version}").uid == 65534
-  end
-  action :nothing
-  subscribes :run, resources(:rvm_shell => "bundle install"), :immediately
+execute "graylog2-web-interface owner-change" do
+  command "chown -Rf #{node['graylog2']['web_user']}:#{node['graylog2']['web_group']} #{node['graylog2']['web_path']}"
 end
 
 # Stream message rake tasks
 cron "Graylog2 send stream alarms" do
+  user node['graylog2']['web_user']
   minute node.graylog2.stream_alarms_cron_minute
   action node.graylog2.send_stream_alarms ? :create : :delete
-  command "cd #{node.graylog2.basedir}/web && RAILS_ENV=production bundle exec rake streamalarms:send"
+  command "cd #{node.graylog2.basedir}/web && source ~/.bashrc && RAILS_ENV=production bundle exec rake streamalarms:send"
 end
 
 cron "Graylog2 send stream subscriptions" do
+  user node['graylog2']['web_user']
   minute node.graylog2.stream_subscriptions_cron_minute
   action node.graylog2.send_stream_subscriptions ? :create : :delete
-  command "cd #{node.graylog2.basedir}/web && RAILS_ENV=production bundle exec rake subscriptions:send"
+  command "cd #{node.graylog2.basedir}/web && source ~/.bashrc && RAILS_ENV=production bundle exec rake subscriptions:send"
 end

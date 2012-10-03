@@ -24,3 +24,11 @@ default.graylog2.stream_subscriptions_cron_minute = "*/15"
 
 default.graylog2.external_hostname = nil
 default.graylog2.server_name = "graylog2"
+
+default['graylog2']['ruby_version'] = "ruby-1.9.3-p194"
+default['graylog2']['ruby_string'] = "ruby-1.9.3-p194@passenger"
+default['graylog2']['passenger_version'] = "3.0.12"
+default['graylog2']['web_path'] = "/var/graylog2/web"
+default['graylog2']['web_user'] = "graylog2-web"
+default['graylog2']['web_group'] = "graylog2-web"
+

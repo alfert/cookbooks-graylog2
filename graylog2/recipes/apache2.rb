@@ -18,7 +18,8 @@
 #
 
 # Install Graylog2 web interface
-include_recipe "graylog2::web_interface"
+#include_recipe "graylog2::web_interface"
+include_recipe "graylog2::web2"
 
 # Install Apache using the OpsCode community cookbook
 include_recipe "apache2"
@@ -27,7 +28,12 @@ include_recipe "apache2"
 #    here allows the use of the 'vanilla' Opscode apache2 cookbook which doesn't have a mod_passenger.rb
 #    recipe. This should be compatible with the above, since the Opscode cookbook uses apt to install
 #    apache.
-package "libapache2-mod-passenger"
+# package "libapache2-mod-passenger"
+
+# TODO: include passenger cookbook and add a custom ruby path (e.g. for a rvm controlled ruby)
+#   
+include_recipe "rvm_passenger::apache2"
+
 
 # Create an Apache vhost for the Graylog2 web interface
 template "apache-vhost-conf" do
