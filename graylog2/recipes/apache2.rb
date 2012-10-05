@@ -17,10 +17,6 @@
 # limitations under the License.
 #
 
-# Install Graylog2 web interface
-#include_recipe "graylog2::web_interface"
-include_recipe "graylog2::web2"
-
 # Install Apache using the OpsCode community cookbook
 include_recipe "apache2"
 
@@ -33,6 +29,11 @@ include_recipe "apache2"
 # TODO: include passenger cookbook and add a custom ruby path (e.g. for a rvm controlled ruby)
 #   
 include_recipe "rvm_passenger::apache2"
+
+# Install Graylog2 web interface
+#include_recipe "graylog2::web_interface"
+include_recipe "graylog2::web2"
+
 
 
 # Create an Apache vhost for the Graylog2 web interface

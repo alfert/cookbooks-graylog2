@@ -91,10 +91,11 @@ end
 
 # Perform bundle install on the newly-installed Graylog2 web interface version
 #execute "rvm exec bundle install" do
-rvm_shell 'bundle install' do
+rvm_shell 'bundle install --verbose' do
   ruby_string node['graylog2']['ruby_string']
   cwd node['graylog2']['web_path'] 
   # user node['graylog2']['web_user']
+  code 'bundle install --verbose'
   action :run
   subscribes :run, resources(:link => node['graylog2']['web_path']), :immediately
 end
