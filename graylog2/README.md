@@ -6,6 +6,8 @@ Installs and configures a Graylog2 server on Ubuntu systems (12.04 only at prese
 This is a Chef re-engineering of the Sean Porter (@portertech) Linode StackScript for graylog2, 
 available here:  http://is.gd/cWA0w9. This version is forked from J.B. Zimmermann version for Ubuntu 10.04. 
 
+This recipe is further developed for Ubuntu 12.04 providing a proper MongoDB. In addition it uses the `rvm` Chef recipe form jnichols (https://github.com/fnichol/chef-rvm) to configure and use Ruby 1.9.3. 
+
 Recipes
 =======
 
@@ -22,13 +24,19 @@ web-interface
 
 First calls graylog2::default to install the server.  Then downloads, installs, and configures 
 the rails-based graylog2-web-interface.  Also installs a local mongo-server to support it.  
+`web-interface` is currently de-funct.
+
+web2
+----
+
+This recipe is re-write of `web-interface` to work properly with rvm. 
 
 apache2
 -------
 
 First calls graylog2::web-interface to ensure that both the server and webui are available.  Then
 calls the Opscode "apache2" cookbook to install apache2 before (itself) installing the apache2
-mod_passenger module via apt, and finally calling apache_site to configure apache2 to serve the
+mod_passenger module via the chef recipe`rvm_passenger`, and finally calling apache_site to configure apache2 to serve the
 graylog2 web interface.
 
 
@@ -58,7 +66,7 @@ License and Author
 ==================
 
 Author:: J.B. Zimmerman (<jzimmerman@mdsol.com>)
-         Klaus Alfert (klaus.alfert@googlemail.com)
+         Klaus Alfert (<klaus.alfert@googlemail.com>)
 
 Copyright 2011 Medidata Solutions, Inc.
 
