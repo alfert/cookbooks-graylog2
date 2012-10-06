@@ -1,6 +1,6 @@
 default.graylog2.basedir = "/var/graylog2"
-default.graylog2.server.version = "0.9.6p1-RC1"
-default.graylog2.web_interface.version = "0.9.6p1-RC1"
+default.graylog2.server.version = "0.9.6p1"
+default.graylog2.web_interface.version = "0.9.6p1"
 
 default.graylog2.elasticsearch.version="0.19.2"
 
@@ -27,7 +27,7 @@ default.graylog2.server_name = "graylog2"
 
 default['graylog2']['ruby_version'] = "ruby-1.9.3-p194"
 default['graylog2']['ruby_string'] = "ruby-1.9.3-p194@passenger"
-default['graylog2']['passenger_version'] = "3.0.12"
+default['graylog2']['passenger_version'] = "3.0.17"
 default['graylog2']['web_path'] = "/var/graylog2/web"
 default['graylog2']['web_user'] = "graylog2-web"
 default['graylog2']['web_group'] = "graylog2-web"
